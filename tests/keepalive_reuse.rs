@@ -1,4 +1,9 @@
-#![cfg(all(feature = "client-legacy", feature = "server", feature = "http2", feature = "tokio"))]
+#![cfg(all(
+    feature = "client-legacy",
+    feature = "server",
+    feature = "http2",
+    feature = "tokio"
+))]
 
 use std::convert::Infallible;
 use std::future::{ready, Ready};
@@ -164,7 +169,14 @@ impl Service<Uri> for Connector {
 
 type TestClient = Client<Connector, Empty<Bytes>>;
 
-fn setup(reuse: Option<Duration>, adaptive: bool) -> (TestClient, Connector, mpsc::UnboundedReceiver<(usize, String)>) {
+fn setup(
+    reuse: Option<Duration>,
+    adaptive: bool,
+) -> (
+    TestClient,
+    Connector,
+    mpsc::UnboundedReceiver<(usize, String)>,
+) {
     let (seen, rx) = mpsc::unbounded_channel();
     let connector = Connector {
         count: Arc::new(AtomicUsize::new(0)),
@@ -206,7 +218,11 @@ async fn advance(seconds: u64) {
 
 async fn get(client: &TestClient) -> usize {
     let response = client.request(request("/ok")).await.unwrap();
-    let id = response.headers()["connection-id"].to_str().unwrap().parse().unwrap();
+    let id = response.headers()["connection-id"]
+        .to_str()
+        .unwrap()
+        .parse()
+        .unwrap();
     assert_eq!(response.collect().await.unwrap().to_bytes(), "complete");
     id
 }
@@ -269,9 +285,15 @@ async fn original_sixty_second_hard_deadline_survives_retirement() {
     advance(5).await;
     assert_eq!(get(&client).await, 1);
     advance(54).await;
-    assert!(!pending.is_finished(), "soft timeout must not shorten the hard deadline");
+    assert!(
+        !pending.is_finished(),
+        "soft timeout must not shorten the hard deadline"
+    );
     advance(1).await;
-    assert!(pending.is_finished(), "hard timer must still wake at PING + 60s");
+    assert!(
+        pending.is_finished(),
+        "hard timer must still wake at PING + 60s"
+    );
     let error = pending.await.unwrap().unwrap_err();
     let mut cause: &(dyn std::error::Error + 'static) = &error;
     let mut timed_out = false;
