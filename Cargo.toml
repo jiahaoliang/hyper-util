@@ -25,7 +25,7 @@ futures-core = { version = "0.3" }
 futures-util = { version = "0.3.16", default-features = false, optional = true }
 http = "1.0"
 http-body = "1.0.0"
-hyper = "1.8.0"
+hyper = { version = "=1.8.1", git = "https://github.com/jiahaoliang/hyper", rev = "7dc5bed413c1ff2593b65ac1e9fd12c0b68ee6da" }
 ipnet = { version = "2.9", optional = true }
 libc = { version = "0.2", optional = true }
 percent-encoding = { version = "2.3", optional = true }
@@ -37,7 +37,7 @@ tower-layer = { version = "0.3", optional = true }
 tower-service = { version = "0.3", optional = true }
 
 [dev-dependencies]
-hyper = { version = "1.4.0", features = ["full"] }
+hyper = { version = "=1.8.1", git = "https://github.com/jiahaoliang/hyper", rev = "7dc5bed413c1ff2593b65ac1e9fd12c0b68ee6da", features = ["full"] }
 bytes = "1"
 futures-util = { version = "0.3.16", default-features = false, features = ["alloc"] }
 http-body-util = "0.1.0"
