@@ -11,13 +11,13 @@ jobs:
       - uses: actions/checkout@v5
         with:
           repository: jiahaoliang/hyper
-          ref: 9b0345db4cf40f4c8a743222ad4ceb5fb721da60
+          ref: 91fe2a92b0f828256fffdfe6bf23283ab7a6bc23
           path: hyper
           persist-credentials: false
       - uses: actions/checkout@v5
         with:
           repository: jiahaoliang/hyper-util
-          ref: 70695c7f46083ffa5e4f4ff8ed87460e57518975
+          ref: f57212520b40fcd58c37993d632c10eed37b2f72
           path: hyper-util
           persist-credentials: false
       - uses: dtolnay/rust-toolchain@stable
@@ -51,5 +51,5 @@ jobs:
         if: always()
         working-directory: hyper-util
         run: |
-          rustfmt --edition 2021 src/client/legacy/client.rs src/client/legacy/connect/mod.rs tests/keepalive_reuse.rs
+          cargo fmt --all
           git diff --exit-code
