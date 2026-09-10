@@ -20,11 +20,11 @@ use http_body_util::{BodyExt, Empty, Full, StreamBody};
 use hyper::body::Frame;
 use hyper::service::service_fn;
 use hyper::{Request, Response, Uri};
-use hyper_util::client::legacy::connect::{Connected, Connection};
 use hyper_util::client::legacy::Client;
+use hyper_util::client::legacy::connect::{Connected, Connection};
 use hyper_util::rt::{TokioExecutor, TokioIo, TokioTimer};
 use tokio::io::{AsyncRead, AsyncWrite, DuplexStream, ReadBuf};
-use tokio::sync::{mpsc, Notify};
+use tokio::sync::{Notify, mpsc};
 use tower_service::Service;
 
 // Pause both directions without EOF, reset, or discarding buffered bytes.
