@@ -1,0 +1,55 @@
+name: Upstream reuse proposal validation
+on:
+  push:
+    branches: [ci/h2-keepalive-upstream-review]
+permissions:
+  contents: read
+jobs:
+  validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          repository: jiahaoliang/hyper
+          ref: 9b0345db4cf40f4c8a743222ad4ceb5fb721da60
+          path: hyper
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
+          repository: jiahaoliang/hyper-util
+          ref: 70695c7f46083ffa5e4f4ff8ed87460e57518975
+          path: hyper-util
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - name: Hyper tests and feature checks
+        working-directory: hyper
+        run: |
+          cargo test --features full --lib
+          cargo check --no-default-features --features client,http2
+          cargo check --no-default-features --features server,http2
+          cargo check --no-default-features --features client,http1
+          cargo doc --no-deps --features full
+      - name: Companion hyper-util tests and feature checks
+        working-directory: hyper-util
+        run: |
+          cargo --config "patch.crates-io.hyper.path='$GITHUB_WORKSPACE/hyper'" test --features full --test keepalive_reuse
+          cargo --config "patch.crates-io.hyper.path='$GITHUB_WORKSPACE/hyper'" test --features full --lib
+          cargo --config "patch.crates-io.hyper.path='$GITHUB_WORKSPACE/hyper'" test --features full --test legacy_client
+          cargo --config "patch.crates-io.hyper.path='$GITHUB_WORKSPACE/hyper'" check --no-default-features --features client-legacy,http2
+          cargo --config "patch.crates-io.hyper.path='$GITHUB_WORKSPACE/hyper'" check --no-default-features --features client-legacy,http1
+          cargo --config "patch.crates-io.hyper.path='$GITHUB_WORKSPACE/hyper'" doc --no-deps --features full
+          cargo --config "patch.crates-io.hyper.path='$GITHUB_WORKSPACE/hyper'" tree -i h2 --features full
+      - name: Hyper formatting
+        if: always()
+        working-directory: hyper
+        run: |
+          rustfmt --edition 2021 src/client/conn/http2.rs src/proto/h2/client.rs src/proto/h2/ping.rs src/proto/h2/server.rs
+          git diff --exit-code
+      - name: hyper-util formatting
+        if: always()
+        working-directory: hyper-util
+        run: |
+          rustfmt --edition 2021 src/client/legacy/client.rs src/client/legacy/connect/mod.rs tests/keepalive_reuse.rs
+          git diff --exit-code
