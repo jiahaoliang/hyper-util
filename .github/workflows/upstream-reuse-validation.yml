@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           repository: jiahaoliang/hyper-util
-          ref: f57212520b40fcd58c37993d632c10eed37b2f72
+          ref: 73b5b88e36fd03d2fb76486c2b66676af87b6bb0
           path: hyper-util
           persist-credentials: false
       - uses: dtolnay/rust-toolchain@stable
